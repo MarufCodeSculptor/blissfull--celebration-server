@@ -1,5 +1,5 @@
 const express = require('express');
-const cors =require('cors')
+const cors = require('cors');
 const app = express();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
@@ -9,7 +9,11 @@ const PORT = process.env.PORT || 5000;
 //  external midleweres =>
 app.use(express.json());
 app.use(cors());
-
+const logger = async (req, res, next) => {
+  const fullurl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+  console.log('hitted to => ', fullurl);
+  next();
+};
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster1.6mzg5rv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -23,13 +27,22 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    //  database and collections =>=> =>=> =>=>
     const servicesCollection = client
       .db('services-db')
       .collection('services-collection');
-    app.get('/services', async (req, res) => {
+    // getting all services => => => => =>
+    app.get('/services', logger, async (req, res) => {
       const data = await servicesCollection.find().toArray();
       res.send(data);
     });
+    // add services =>
+    app.post('/add-services', logger, async (req, res) => {
+      const recievedData = req.body;
+      const result = await servicesCollection.insertOne(recievedData);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db('admin').command({ ping: 1 });
     console.log(
@@ -40,8 +53,8 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get('/', async (req, res) => {
-  const message = 'initail message of server';
+app.get('/', logger, async (req, res) => {
+  const message = { message: ' HAY.....server connected successfully....' };
   res.send(message);
 });
 
