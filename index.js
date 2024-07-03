@@ -1,14 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 5000;
-
+const corsOptions = {
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  credentials: true,
+  optionSuccessStatus: 200,
+};
 //  external midleweres =>
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 const logger = async (req, res, next) => {
   const fullurl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   console.log('hitted to => ', fullurl);
@@ -35,6 +39,15 @@ async function run() {
     app.get('/services', logger, async (req, res) => {
       const data = await servicesCollection.find().toArray();
       res.send(data);
+    });
+    // getting single services by id => => =>=> =>=>
+    app.get('/service/:id', logger, async (req, res) => {
+      const id = req.params.id;
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await servicesCollection.findOne(query);
+      res.send(result);
     });
     // add services =>
     app.post('/add-services', logger, async (req, res) => {
