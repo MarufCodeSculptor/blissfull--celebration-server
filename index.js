@@ -35,6 +35,9 @@ async function run() {
     const servicesCollection = client
       .db('services-db')
       .collection('services-collection');
+    const bookedCollection = client
+      .db('services-db')
+      .collection('booked-collection');
     // getting all services => => => => =>
     app.get('/services', logger, async (req, res) => {
       const data = await servicesCollection.find().toArray();
@@ -53,6 +56,12 @@ async function run() {
     app.post('/add-services', logger, async (req, res) => {
       const recievedData = req.body;
       const result = await servicesCollection.insertOne(recievedData);
+      res.send(result);
+    });
+    // adding bookings data => =>=>=>=>
+    app.post('/booked-services', logger, async (req, res) => {
+      const data = req.body;
+      const result = await bookedCollection.insertOne(data);
       res.send(result);
     });
 
