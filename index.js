@@ -40,9 +40,13 @@ async function run() {
       .collection('booked-collection');
     // getting all services => => => => =>
     app.get('/services', logger, async (req, res) => {
-      const data = await servicesCollection.find().toArray();
+      const userEmail = req.query.email;
+      let query = {};
+      if (userEmail) query = { providerEmail: userEmail };
+      const data = await servicesCollection.find(query).toArray();
       res.send(data);
     });
+
     // getting single services by id => => =>=> =>=>
     app.get('/service/:id', logger, async (req, res) => {
       const id = req.params.id;
