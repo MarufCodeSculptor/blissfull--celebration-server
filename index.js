@@ -62,6 +62,29 @@ async function run() {
       const result = await servicesCollection.insertOne(recievedData);
       res.send(result);
     });
+    // updating services =>=>=>=>
+    app.patch('/service/:id', logger, async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          ...updateData,
+        },
+      };
+      const result = await servicesCollection.updateOne(query, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
+
+    // removing item from collections =>=>=>=>
+    app.delete('/service/:id', logger, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await servicesCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // adding bookings data => =>=>=>=>
     app.post('/booked-services', logger, async (req, res) => {
       const data = req.body;
