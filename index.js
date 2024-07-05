@@ -84,7 +84,14 @@ async function run() {
       const result = await servicesCollection.deleteOne(query);
       res.send(result);
     });
-
+    // getting bookings data =>=>=>=>
+    app.get('/booked-data', logger, async (req, res) => {
+      const userEmail = req.query.email;
+      let query = {};
+      if (userEmail) query = { 'buyer.buyerEmail': userEmail };
+      const result = await bookedCollection.find(query).toArray();
+      res.send(result);
+    });
     // adding bookings data => =>=>=>=>
     app.post('/booked-services', logger, async (req, res) => {
       const data = req.body;
