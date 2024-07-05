@@ -101,13 +101,25 @@ async function run() {
       res.send(result);
     });
 
-
-
-
     // adding bookings data => =>=>=>=>
     app.post('/booked-services', logger, async (req, res) => {
       const data = req.body;
       const result = await bookedCollection.insertOne(data);
+      res.send(result);
+    });
+    // updating bookings data=> =>
+
+    app.patch('/booked-services/:id', logger, async (req, res) => {
+      const id = req.params.id;
+      const bodyData = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          ...bodyData,
+        },
+      };
+
+      const result = await bookedCollection.updateOne(query, updateDoc);
       res.send(result);
     });
 
