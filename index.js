@@ -92,6 +92,18 @@ async function run() {
       const result = await bookedCollection.find(query).toArray();
       res.send(result);
     });
+    // getting providers data =>=>=>=>
+    app.get('/provider-data', logger, async (req, res) => {
+      const userEmail = req.query.email;
+      let query = {};
+      if (userEmail) query = { 'provider.providerEmail': userEmail };
+      const result = await bookedCollection.find(query).toArray();
+      res.send(result);
+    });
+
+
+
+
     // adding bookings data => =>=>=>=>
     app.post('/booked-services', logger, async (req, res) => {
       const data = req.body;
